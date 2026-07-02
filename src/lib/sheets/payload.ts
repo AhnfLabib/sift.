@@ -43,11 +43,11 @@ export function buildSummaryRows(
   const rows = [...months]
     .sort((a, b) => a.month.localeCompare(b.month))
     .map((m) => {
-      const cells = categoryNames.map((name) =>
-        centsToDollars(m.byCategory[name] ?? 0),
-      );
-      const total = cells.reduce((sum, dollars) => sum + dollars, 0);
-      return [m.month, ...cells, total];
+      // Total in integer cents, converting once at the end — summing the
+      // per-cell dollar floats would accumulate drift (10.1 + 20.2 ≠ 30.3).
+      const centsCells = categoryNames.map((name) => m.byCategory[name] ?? 0);
+      const totalCents = centsCells.reduce((sum, cents) => sum + cents, 0);
+      return [m.month, ...centsCells.map(centsToDollars), centsToDollars(totalCents)];
     });
   return [header, ...rows];
 }

@@ -95,4 +95,11 @@ describe("buildSummaryRows", () => {
   it("returns just the minimal header when there are no months", () => {
     expect(buildSummaryRows([])).toEqual([["Month", "Total"]]);
   });
+
+  it("totals in cents, avoiding float drift (1010 + 2020 -> 30.3, not 30.299999…)", () => {
+    const rows = buildSummaryRows([
+      { month: "2026-07", byCategory: { Food: 1010, Transit: 2020 } },
+    ]);
+    expect(rows[1]).toEqual(["2026-07", 10.1, 20.2, 30.3]);
+  });
 });
