@@ -35,10 +35,20 @@ Derived tints (e.g. `banker` at 8% for hover washes, `ink` at 55% for secondary 
 
 Scale: 13 / 15 (body) / 18 / 24 / 40 (monthly total, Besley). Amounts in lists: 15px Plex Mono. Sentence case everywhere; small-caps eyebrows only for column headings on the ledger card (DATE · ENTRY · AMOUNT), where a real ledger would have printed them.
 
+### Materials — three layers, strictly separated
+
+The interface is built from three materials, and each element belongs to exactly one:
+
+1. **Blotter (the desk)** — the matte canvas everything sits on, with faint ambient color washes (feint blue, banker green at low opacity) that give the glass layer something to refract.
+2. **Paper (the record)** — reserved for the ledger card and form inputs. Matte, opaque, ruled. **Paper is never glass**: the record of your money must feel permanent, so the ledger card gets no transparency, no blur, no sheen.
+3. **Glass (the tools)** — liquid-glass treatment for everything that *floats above* the desk rather than lying on it: the sticky top bar, the quick-add and chat instrument panels, the mobile floating action button, and (in-app later) toasts and sheets. Recipe: translucent tint of the layer's base color (`page` at ~50% for light panels, `banker` at ~85% for dark chrome), `backdrop-filter: blur(14–16px) saturate(1.4)`, a 1px light border, an inset top highlight, and a soft specular gradient across the upper edge. An `@supports` fallback swaps to near-opaque fills where `backdrop-filter` is unsupported.
+
+The same scarcity rule that governs skeuomorphism governs glass: it marks the *tool layer* only. Paper records, glass instruments, felt desk — if a new component doesn't clearly belong to one of the three, it's blotter-flat by default.
+
 ### Space, shape, elevation
 
 - 8px base grid; card radius 10px (tactile, not pill-shaped); buttons 8px.
-- **Elevation is reserved for the skeuomorphic elements.** The ledger card gets a soft two-layer shadow + faint inner edge shadow (paper lying on the blotter). Flat panels (budget bars, chat) get a 1px `ink`/8% border and no shadow. This scarcity is what keeps the skeuomorphism "sparing" as the brief demands.
+- **Elevation follows material.** The ledger card (paper) gets a soft two-layer shadow + faint inner edge shadow — paper lying on the blotter. Glass panels get the recipe above (blur, light border, specular top edge, gentle drop shadow — a pane hovering just off the desk). Nothing else casts a shadow. This scarcity is what keeps the skeuomorphism "sparing" as the brief demands.
 - Pressed states (brief requirement): buttons translate down 1px and swap to an inset shadow on `:active` — a light mechanical press, applied to every button uniformly.
 
 ## Layout
