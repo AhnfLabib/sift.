@@ -16,7 +16,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (user.email?.toLowerCase() !== process.env.ALLOWED_EMAIL?.toLowerCase()) {
+  const allowedEmail = process.env.ALLOWED_EMAIL;
+  if (
+    !user.email ||
+    !allowedEmail ||
+    user.email.toLowerCase() !== allowedEmail.toLowerCase()
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.search = "?error=not-allowed";

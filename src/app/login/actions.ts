@@ -18,6 +18,16 @@ export async function signIn(formData: FormData) {
     redirect("/login?error=invalid-credentials");
   }
 
+  const allowedEmail = process.env.ALLOWED_EMAIL;
+  if (
+    !data.user.email ||
+    !allowedEmail ||
+    data.user.email.toLowerCase() !== allowedEmail.toLowerCase()
+  ) {
+    await supabase.auth.signOut();
+    redirect("/login?error=invalid-credentials");
+  }
+
   await ensureProfileSeeded(supabase, data.user.id, data.user.email ?? email);
 
   redirect("/");
