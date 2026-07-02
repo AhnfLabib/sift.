@@ -164,7 +164,7 @@ export default function CategoryManager({
         ))}
       </div>
 
-      <section className="glass mt-4" aria-labelledby={headingId}>
+      <section className="glass mt-4 p-5" aria-labelledby={headingId}>
         <p
           id={headingId}
           className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink/55"

@@ -47,7 +47,7 @@ export default function QuickAdd({ categories, logExpenseWeb }: Props) {
   }
 
   return (
-    <section className="glass" aria-labelledby={headingId}>
+    <section className="glass p-5" aria-labelledby={headingId}>
       <p id={headingId} className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink/55">
         Quick add
       </p>

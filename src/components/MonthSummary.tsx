@@ -41,7 +41,7 @@ export default function MonthSummary({
   const uncategorizedCount = summary.uncategorizedCount;
 
   return (
-    <section className="glass" aria-labelledby="month-h">
+    <section className="glass p-5" aria-labelledby="month-h">
       <p
         id="month-h"
         className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink/55"
