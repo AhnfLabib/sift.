@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #23271F;
+  --color-blotter: #E5E4DA;
+  --color-page: #FBF6E9;
+  --color-banker: #1E3A2D;
+  --color-debit: #A93F2E;
+  --color-feint: #9FB6C4;
+  --font-display: var(--font-besley);
+  --font-body: var(--font-public-sans);
+  --font-data: var(--font-plex-mono);
+}
+
+body {
+  background:
+    radial-gradient(1100px 640px at 88% -12%, rgba(159, 182, 196, 0.38), transparent 62%),
+    radial-gradient(1200px 760px at -12% 112%, rgba(30, 58, 45, 0.20), transparent 60%),
+    radial-gradient(700px 480px at 55% 118%, rgba(169, 63, 46, 0.07), transparent 65%),
+    var(--color-blotter);
+  background-attachment: fixed;
+  color: var(--color-ink);
+}
+
+:focus-visible { outline: 2px solid var(--color-banker); outline-offset: 2px; }
+
+.glass {
+  position: relative;
+  background: linear-gradient(160deg, rgba(251, 246, 233, 0.60), rgba(251, 246, 233, 0.34));
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid rgba(251, 246, 233, 0.65);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.65), inset 0 -1px 0 rgba(35,39,31,0.05), 0 6px 22px rgba(35,39,31,0.08);
+}
+.glass::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 42%;
+  border-radius: 12px 12px 40% 40%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.22), transparent);
+  pointer-events: none;
+}
+.glass > * { position: relative; }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass { background: rgba(251, 246, 233, 0.88); }
+}
+
+.pressable:active { transform: translateY(1px); box-shadow: inset 0 2px 3px rgba(0,0,0,0.28); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
