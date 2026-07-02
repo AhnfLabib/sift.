@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Besley, Public_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -24,6 +24,9 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "sift.",
   description: "A well-kept ledger for your money.",
+};
+
+export const viewport: Viewport = {
   themeColor: "#1E3A2D",
 };
 

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Banker-green bookcloth square, cream "s." in the wordmark's serif. -->
+  <rect width="512" height="512" rx="112" fill="#1E3A2D"/>
+  <text
+    x="242"
+    y="256"
+    text-anchor="middle"
+    dominant-baseline="central"
+    font-family="Besley, Georgia, 'Times New Roman', serif"
+    font-weight="800"
+    font-size="340"
+    fill="#FBF6E9"
+  >s.</text>
+</svg>
