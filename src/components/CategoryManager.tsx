@@ -74,7 +74,7 @@ function CategoryCard({ category, addKeyword, deleteKeyword, setBudget }: CardPr
                 aria-label={`Remove keyword ${kw.keyword}`}
                 onClick={() => handleDeleteKeyword(kw.id)}
                 disabled={pending}
-                className="grid h-5 w-5 place-items-center rounded-full text-ink/50 hover:text-debit disabled:opacity-60"
+                className="-m-1 grid h-6 w-6 place-items-center rounded-full text-ink/50 hover:text-debit disabled:opacity-60"
               >
                 ×
               </button>

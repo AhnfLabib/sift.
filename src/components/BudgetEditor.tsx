@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 
 import { parseDollarsToCents } from "@/lib/domain/money";
 import type { setBudget } from "@/lib/db/mutations";
@@ -25,25 +25,39 @@ export default function BudgetEditor({ categoryId, limitCents, setBudget }: Prop
   const [value, setValue] = useState(limitCents ? centsToInputValue(limitCents) : "");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  // Cents last confirmed with the server; null budget is tracked as 0 so
+  // blank input compares equal to "no budget".
+  const [lastCommittedCents, setLastCommittedCents] = useState(limitCents ?? 0);
+  // Guards against a re-entrant commit (e.g. Enter-submit followed by the
+  // blur it triggers) firing a second mutation while the first is in flight.
+  const committingRef = useRef(false);
 
   function commit() {
+    if (committingRef.current) return;
+
     const trimmed = value.trim();
-    if (trimmed.length === 0) {
+    let cents = 0;
+    if (trimmed.length > 0) {
+      const parsed = parseDollarsToCents(trimmed);
+      if (parsed === null) {
+        setError("Enter an amount like 12.50.");
+        return;
+      }
+      cents = parsed;
+    }
+
+    if (cents === lastCommittedCents) {
       setError(null);
-      startTransition(async () => {
-        await setBudget(categoryId, 0);
-      });
       return;
     }
 
-    const cents = parseDollarsToCents(trimmed);
-    if (cents === null) {
-      setError("Enter an amount like 12.50.");
-      return;
-    }
     setError(null);
+    committingRef.current = true;
     startTransition(async () => {
       await setBudget(categoryId, cents);
+      setLastCommittedCents(cents);
+      setValue(cents === 0 ? "" : centsToInputValue(cents));
+      committingRef.current = false;
     });
   }
 
