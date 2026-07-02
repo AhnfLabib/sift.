@@ -24,7 +24,7 @@ interface Props {
 export default function ChatPanel({ logExpenseChat }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const [pending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const headingId = useId();
 
   function handleSubmit(e: React.FormEvent) {
@@ -79,10 +79,12 @@ export default function ChatPanel({ logExpenseChat }: Props) {
           onChange={(e) => setInput(e.target.value)}
           className="min-h-[44px] flex-1 rounded-lg border border-ink/22 bg-page px-3 py-2 font-data text-[13px] text-ink"
         />
+        {/* Deliberately never disabled: a disabled default button blocks the
+            input's Enter-to-submit, silently swallowing rapid consecutive
+            entries. Each send gets its own "…" placeholder bubble instead. */}
         <button
           type="submit"
-          disabled={pending}
-          className="pressable min-h-[44px] rounded-lg bg-banker px-4 text-[13.5px] font-semibold text-page disabled:opacity-60"
+          className="pressable min-h-[44px] rounded-lg bg-banker px-4 text-[13.5px] font-semibold text-page"
         >
           Log
         </button>

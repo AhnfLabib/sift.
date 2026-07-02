@@ -55,4 +55,16 @@ describe("parseDollarsToCents", () => {
   it('parses "1200" as 120000 (whole dollars, no decimal)', () => {
     expect(parseDollarsToCents("1200")).toBe(120000);
   });
+
+  it("parses exactly $100,000 (the ceiling)", () => {
+    expect(parseDollarsToCents("100000")).toBe(10_000_000);
+  });
+
+  it("returns null just above the ceiling", () => {
+    expect(parseDollarsToCents("100000.01")).toBeNull();
+  });
+
+  it("returns null for absurdly large values that would overflow the DB integer column", () => {
+    expect(parseDollarsToCents("99999999999999999999")).toBeNull();
+  });
 });

@@ -44,6 +44,18 @@ body {
   .glass { background: rgba(251, 246, 233, 0.88); }
 }
 
+/* Fluidity: interactive elements ease between states instead of snapping.
+   prefers-reduced-motion below zeroes these out. */
+a, button, input, select, .pressable {
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    opacity 160ms ease,
+    box-shadow 160ms ease,
+    transform 100ms ease;
+}
+
 .pressable:active { transform: translateY(1px); box-shadow: inset 0 2px 3px rgba(0,0,0,0.28); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -218,7 +230,10 @@ body {
   padding-top: 6px;
 }
 
-@media (max-width: 767px) {
+/* Compact ledger columns apply whenever the ledger sits in a narrow column:
+   full-width on phones AND the half-width md column (768–1023px). Matches
+   Tailwind's lg breakpoint, where the dashboard grid gives the ledger room. */
+@media (max-width: 1023px) {
   .ledger-body { min-height: calc(var(--row) * 8); }
   .ledger-cols, .entry, .entry-hint { grid-template-columns: 52px 1fr 76px; padding-left: 16px; padding-right: 16px; }
   .ledger-foot { grid-template-columns: 52px 1fr 96px; padding-left: 16px; padding-right: 16px; }
@@ -230,4 +245,16 @@ body {
 @keyframes sheet-up {
   from { transform: translateY(100%); }
   to   { transform: translateY(0); }
+}
+@keyframes sheet-down {
+  from { transform: translateY(0); }
+  to   { transform: translateY(100%); }
+}
+@keyframes backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes backdrop-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
 }

@@ -24,7 +24,7 @@ export default async function LoginPage({
               type="email"
               required
               autoComplete="email"
-              className="rounded-lg border border-[rgba(35,39,31,0.22)] bg-page px-3 py-2 text-ink"
+              className="min-h-[44px] rounded-lg border border-ink/22 bg-page px-3 py-2 text-ink"
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -37,7 +37,7 @@ export default async function LoginPage({
               type="password"
               required
               autoComplete="current-password"
-              className="rounded-lg border border-[rgba(35,39,31,0.22)] bg-page px-3 py-2 text-ink"
+              className="min-h-[44px] rounded-lg border border-ink/22 bg-page px-3 py-2 text-ink"
             />
           </div>
           {error ? (
@@ -45,7 +45,7 @@ export default async function LoginPage({
           ) : null}
           <button
             type="submit"
-            className="pressable rounded-lg bg-banker py-2 font-medium text-page"
+            className="pressable min-h-[44px] rounded-lg bg-banker py-2 font-semibold text-page hover:bg-[#244737]"
           >
             Sign in
           </button>

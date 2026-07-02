@@ -42,7 +42,7 @@ export default function BudgetBar({
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-ink/8">
         <div
-          className={`h-full rounded-full ${over ? "bg-debit" : "bg-banker"}`}
+          className={`h-full rounded-full transition-[width] duration-300 ease-out ${over ? "bg-debit" : "bg-banker"}`}
           style={{ width: `${pct}%` }}
         />
       </div>

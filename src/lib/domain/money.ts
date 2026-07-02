@@ -16,10 +16,14 @@ export function formatCents(cents: number): string {
 // anything non-numeric.
 const DOLLARS_RE = /^\$?(\d+)(?:\.(\d{1,2}))?$/;
 
+// $100,000 — same ceiling the chat parser enforces, and comfortably inside
+// the database's integer column.
+export const MAX_CENTS = 100_000 * 100;
+
 /**
  * Parses a user-typed dollar string into integer cents.
  * "14.5" -> 1450; "" -> null; "abc" -> null; "12.345" -> null (too many
- * decimal places); anything resolving to <= 0 -> null.
+ * decimal places); anything resolving to <= 0 or above MAX_CENTS -> null.
  */
 export function parseDollarsToCents(input: string): number | null {
   const trimmed = input.trim();
@@ -32,6 +36,6 @@ export function parseDollarsToCents(input: string): number | null {
   const fractionPart = (match[2] ?? "").padEnd(2, "0");
   const cents = Number(wholePart) * 100 + Number(fractionPart);
 
-  if (!Number.isFinite(cents) || cents <= 0) return null;
+  if (!Number.isSafeInteger(cents) || cents <= 0 || cents > MAX_CENTS) return null;
   return cents;
 }
