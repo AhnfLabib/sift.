@@ -131,11 +131,11 @@ reminders_log       id, bill_id, due_date, lead_days, channel ('email'|'sms'),
 
 All tables carry RLS: `user_id = auth.uid()` (service-role key used only by the Twilio webhook and cron routes).
 
-## Open questions for review
+## Open questions — RESOLVED (2026-07-02)
 
-1. **USD-only confirmed?** (Decision 1 assumes yes.)
-2. **Monthly-only bills acceptable for v1?** (Weekly recurrence cut.)
-3. **SMS vs. WhatsApp** — given A2P 10DLC friction, is WhatsApp sandbox acceptable as the personal messaging channel, at least initially?
+1. **USD-only confirmed?** — **Yes.** Amounts are USD integer cents throughout.
+2. **Monthly-only bills acceptable for v1?** — **Yes.** All recurring bills are due on a fixed day each month; weekly/custom recurrence stays cut and can be added later behind the existing `recurrence` column.
+3. **SMS vs. WhatsApp?** — **WhatsApp is acceptable.** Phase 3's messaging channel is the Twilio WhatsApp sandbox (skips A2P 10DLC registration entirely). Native SMS becomes an optional later upgrade if ever wanted; the webhook/parser code is channel-agnostic either way.
 
 ## Next step
 
