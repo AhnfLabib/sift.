@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sift. — dashboard mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,600;0,700;0,800;1,700&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #23271F;
+    --ink-55: rgba(35, 39, 31, 0.55);
+    --ink-08: rgba(35, 39, 31, 0.08);
+    --blotter: #E5E4DA;
+    --page: #FBF6E9;
+    --banker: #1E3A2D;
+    --banker-08: rgba(30, 58, 45, 0.08);
+    --debit: #A93F2E;
+    --feint: #9FB6C4;
+    --row: 44px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    /* ambient washes give the glass layer something to refract */
+    background:
+      radial-gradient(1100px 640px at 88% -12%, rgba(159, 182, 196, 0.38), transparent 62%),
+      radial-gradient(1200px 760px at -12% 112%, rgba(30, 58, 45, 0.20), transparent 60%),
+      radial-gradient(700px 480px at 55% 118%, rgba(169, 63, 46, 0.07), transparent 65%),
+      var(--blotter);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: "Public Sans", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  button { font: inherit; cursor: pointer; }
+
+  :focus-visible { outline: 2px solid var(--banker); outline-offset: 2px; }
+
+  /* ── Top bar: bookcloth behind glass ────────────── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(30, 58, 45, 0.86);
+    -webkit-backdrop-filter: blur(14px) saturate(1.5);
+    backdrop-filter: blur(14px) saturate(1.5);
+    border-bottom: 1px solid rgba(251, 246, 233, 0.14);
+    box-shadow: inset 0 1px 0 rgba(251, 246, 233, 0.10), 0 1px 12px rgba(35, 39, 31, 0.10);
+    color: var(--page);
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 0 28px;
+    height: 56px;
+  }
+  .wordmark {
+    font-family: "Besley", serif;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: 0.01em;
+  }
+  .topbar nav { display: flex; gap: 4px; margin-left: 8px; }
+  .topbar nav a {
+    color: rgba(251, 246, 233, 0.72);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 8px;
+  }
+  .topbar nav a[aria-current="page"] {
+    color: var(--page);
+    background: rgba(251, 246, 233, 0.12);
+  }
+  .topbar nav a:hover { color: var(--page); }
+  .topbar .account {
+    margin-left: auto;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(251, 246, 233, 0.18);
+    border: 1px solid rgba(251, 246, 233, 0.35);
+    color: var(--page);
+    font-weight: 600;
+    font-size: 13px;
+    display: grid; place-items: center;
+  }
+
+  /* ── Layout grid ────────────────────────────────── */
+  .shell {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 28px 28px 64px;
+    display: grid;
+    grid-template-columns: 4fr 5fr 3fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ── Glass: the tool layer (never the paper record) ── */
+  .panel {
+    position: relative;
+    background: linear-gradient(160deg, rgba(251, 246, 233, 0.60), rgba(251, 246, 233, 0.34));
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid rgba(251, 246, 233, 0.65);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.65),
+      inset 0 -1px 0 rgba(35, 39, 31, 0.05),
+      0 6px 22px rgba(35, 39, 31, 0.08);
+  }
+  /* specular sweep along the top edge */
+  .panel::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 42%;
+    border-radius: 12px 12px 40% 40%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.22), transparent);
+    pointer-events: none;
+  }
+  .panel > * { position: relative; } /* content above the sheen */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .panel { background: rgba(251, 246, 233, 0.88); }
+    .topbar { background: var(--banker); }
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-55);
+  }
+
+  /* ── Month summary ──────────────────────────────── */
+  .summary .month { margin-bottom: 4px; }
+  .summary .total {
+    font-family: "Besley", serif;
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  .summary .of {
+    color: var(--ink-55);
+    font-size: 14px;
+    margin-top: 2px;
+    margin-bottom: 24px;
+  }
+  .summary .of strong { color: var(--ink); font-weight: 600; }
+
+  .budget-row { margin-bottom: 16px; }
+  .budget-row .line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .budget-row .name { font-size: 14px; font-weight: 500; }
+  .budget-row .figures {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12.5px;
+    color: var(--ink-55);
+  }
+  .budget-row .figures .spent { color: var(--ink); font-weight: 500; }
+  .budget-row .figures .over { color: var(--debit); font-weight: 500; }
+  .bar {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--ink-08);
+    overflow: hidden;
+  }
+  .bar > i {
+    display: block;
+    height: 100%;
+    border-radius: 4px;
+    background: var(--banker);
+  }
+  .bar > i.over { background: var(--debit); }
+
+  .nudge {
+    margin-top: 20px;
+    padding: 12px 14px;
+    border: 1px dashed rgba(35, 39, 31, 0.25);
+    border-radius: 8px;
+    font-size: 13.5px;
+    color: var(--ink-55);
+  }
+  .nudge a { color: var(--banker); font-weight: 600; }
+
+  /* ── Ledger card (signature) ────────────────────── */
+  .ledger {
+    background:
+      /* faint paper grain */
+      radial-gradient(rgba(35,39,31,0.028) 1px, transparent 1.4px),
+      var(--page);
+    background-size: 5px 5px, auto;
+    border-radius: 10px;
+    box-shadow:
+      0 1px 2px rgba(35, 39, 31, 0.10),
+      0 8px 24px rgba(35, 39, 31, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7),
+      inset 0 -1px 2px rgba(35, 39, 31, 0.05);
+    overflow: hidden;
+  }
+
+  .ledger-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 18px 22px 10px;
+  }
+  .ledger-head h2 {
+    font-family: "Besley", serif;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .ledger-head .folio {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--ink-55);
+  }
+
+  /* column headings, printed */
+  .ledger-cols {
+    display: grid;
+    grid-template-columns: 72px 1fr 96px;
+    padding: 0 22px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    color: var(--ink-55);
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 6px;
+  }
+  .ledger-cols .amt { text-align: right; }
+
+  /* the ruled body: feint lines repeat independent of content */
+  .ledger-body {
+    position: relative;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(var(--row) - 1px),
+        rgba(159, 182, 196, 0.55) calc(var(--row) - 1px),
+        rgba(159, 182, 196, 0.55) var(--row)
+      );
+    min-height: calc(var(--row) * 10);
+  }
+  /* red margin rule */
+  .ledger-body::before {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 86px;
+    width: 1px;
+    background: rgba(169, 63, 46, 0.55);
+  }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 72px 1fr 96px;
+    align-items: center;
+    height: var(--row);
+    padding: 0 22px;
+  }
+  .entry .date {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--ink-55);
+  }
+  .entry .what {
+    min-width: 0;
+    padding-left: 14px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .entry .merchant {
+    font-weight: 500;
+    font-size: 14.5px;
+    flex: none;
+    max-width: 72%;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .entry .cat {
+    font-size: 12px;
+    color: var(--ink-55);
+    min-width: 0;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .entry .cat.uncat { color: var(--debit); }
+  .entry .amount {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 15px;
+    font-weight: 500;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .entry.inked { animation: ink-on 140ms ease-out; }
+  @keyframes ink-on {
+    from { opacity: 0; transform: translateY(1px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .entry.inked { animation: none; }
+  }
+
+  .entry-hint {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    align-items: center;
+    height: var(--row);
+    padding: 0 22px;
+    color: var(--ink-55);
+    font-size: 13px;
+    font-style: italic;
+  }
+  .entry-hint code {
+    font-family: "IBM Plex Mono", monospace;
+    font-style: normal;
+    font-size: 12.5px;
+    background: var(--ink-08);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+  .entry-hint span { padding-left: 14px; }
+
+  /* totting line + total */
+  .ledger-foot {
+    display: grid;
+    grid-template-columns: 72px 1fr 120px;
+    align-items: center;
+    padding: 10px 22px 16px;
+  }
+  .ledger-foot .label {
+    grid-column: 2;
+    text-align: right;
+    padding-right: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-55);
+  }
+  .ledger-foot .sum {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: right;
+    border-top: 1px solid var(--ink);
+    box-shadow: 0 -3px 0 -1px var(--ink); /* double rule */
+    padding-top: 6px;
+  }
+
+  /* ── Right column: quick add + chat ─────────────── */
+  .field { margin-top: 14px; }
+  .field label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  .field input, .field select {
+    width: 100%;
+    font: inherit;
+    color: var(--ink);
+    background: var(--page);
+    border: 1px solid rgba(35, 39, 31, 0.22);
+    border-radius: 8px;
+    padding: 9px 11px;
+  }
+  .field input::placeholder { color: rgba(35, 39, 31, 0.35); }
+  .field input.amount-input {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 16px;
+  }
+
+  .btn {
+    display: inline-block;
+    width: 100%;
+    margin-top: 18px;
+    background: var(--banker);
+    color: var(--page);
+    border: none;
+    border-radius: 8px;
+    padding: 11px 16px;
+    font-weight: 600;
+    font-size: 14.5px;
+    box-shadow: 0 1px 2px rgba(35, 39, 31, 0.25);
+  }
+  .btn:hover { background: #244737; }
+  .btn:active {
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.28);
+  }
+
+  .chat { margin-top: 24px; }
+  .chat .thread { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .msg {
+    max-width: 92%;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 13.5px;
+  }
+  .msg.you {
+    align-self: flex-end;
+    background: var(--banker);
+    color: var(--page);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+  }
+  .msg.bot {
+    align-self: flex-start;
+    background: var(--page);
+    border: 1px solid var(--ink-08);
+  }
+  .msg.bot .parse {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12.5px;
+    display: block;
+    margin-top: 2px;
+  }
+  .chat form { display: flex; gap: 8px; margin-top: 12px; }
+  .chat input {
+    flex: 1;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--page);
+    border: 1px solid rgba(35, 39, 31, 0.22);
+    border-radius: 8px;
+    padding: 9px 11px;
+  }
+  .chat button {
+    background: var(--banker);
+    color: var(--page);
+    border: none;
+    border-radius: 8px;
+    padding: 0 14px;
+    font-weight: 600;
+    font-size: 13.5px;
+  }
+  .chat button:active { transform: translateY(1px); box-shadow: inset 0 2px 3px rgba(0,0,0,0.28); }
+
+  /* ── Mobile FAB ─────────────────────────────────── */
+  .fab {
+    display: none;
+    position: fixed;
+    right: 20px; bottom: 20px;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: rgba(30, 58, 45, 0.80);
+    -webkit-backdrop-filter: blur(10px) saturate(1.5);
+    backdrop-filter: blur(10px) saturate(1.5);
+    color: var(--page);
+    border: 1px solid rgba(251, 246, 233, 0.28);
+    font-size: 26px;
+    line-height: 1;
+    box-shadow:
+      inset 0 1px 0 rgba(251, 246, 233, 0.30),
+      0 4px 14px rgba(35, 39, 31, 0.35);
+  }
+  .fab:active { transform: translateY(1px); box-shadow: 0 2px 6px rgba(35,39,31,0.3), inset 0 2px 3px rgba(0,0,0,0.28); }
+
+  /* ── Responsive ─────────────────────────────────── */
+  @media (max-width: 1023px) {
+    .shell { grid-template-columns: 1fr 1fr; }
+    .col-right { grid-column: 1 / -1; }
+  }
+  @media (max-width: 767px) {
+    .topbar { padding: 0 16px; gap: 16px; }
+    .topbar nav { display: none; }
+    .shell {
+      grid-template-columns: 1fr;
+      padding: 16px 16px 96px; /* room for FAB */
+      gap: 16px;
+    }
+    .col-right { display: none; }
+    .fab { display: grid; place-items: center; }
+    .summary .total { font-size: 34px; }
+    .ledger-body { min-height: calc(var(--row) * 8); }
+    .ledger-cols, .entry, .entry-hint { grid-template-columns: 52px 1fr 76px; padding-left: 16px; padding-right: 16px; }
+    .ledger-foot { grid-template-columns: 52px 1fr 96px; padding-left: 16px; padding-right: 16px; }
+    .ledger-body::before { left: 62px; }
+    .entry .what, .ledger-cols span:nth-child(2), .entry-hint span { padding-left: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="wordmark">sift.</span>
+  <nav aria-label="Primary">
+    <a href="#" aria-current="page">Dashboard</a>
+    <a href="#">Bills</a>
+    <a href="#">Categories</a>
+    <a href="#">Export</a>
+  </nav>
+  <span class="account" aria-label="Account">Y</span>
+</header>
+
+<main class="shell">
+
+  <!-- Left: month summary + budgets -->
+  <section class="panel summary col-left" aria-labelledby="month-h">
+    <p class="eyebrow month" id="month-h">July 2026 · Spent so far</p>
+    <p class="total">$1,284.50</p>
+    <p class="of">of <strong>$2,400.00</strong> budgeted</p>
+
+    <div class="budget-row">
+      <div class="line">
+        <span class="name">Food</span>
+        <span class="figures"><span class="spent">$412.30</span> / $500</span>
+      </div>
+      <div class="bar"><i style="width:82%"></i></div>
+    </div>
+
+    <div class="budget-row">
+      <div class="line">
+        <span class="name">Transit</span>
+        <span class="figures"><span class="over">$186.50</span> / $150</span>
+      </div>
+      <div class="bar"><i class="over" style="width:100%"></i></div>
+    </div>
+
+    <div class="budget-row">
+      <div class="line">
+        <span class="name">Subscriptions</span>
+        <span class="figures"><span class="spent">$47.97</span> / $60</span>
+      </div>
+      <div class="bar"><i style="width:80%"></i></div>
+    </div>
+
+    <div class="budget-row">
+      <div class="line">
+        <span class="name">Entertainment</span>
+        <span class="figures"><span class="spent">$62.00</span> / $120</span>
+      </div>
+      <div class="bar"><i style="width:52%"></i></div>
+    </div>
+
+    <div class="budget-row">
+      <div class="line">
+        <span class="name">Shopping</span>
+        <span class="figures"><span class="spent">$575.73</span> / $600</span>
+      </div>
+      <div class="bar"><i style="width:96%"></i></div>
+    </div>
+
+    <p class="nudge">3 entries this week have no category — <a href="#">tag them</a> and sift. remembers next time.</p>
+  </section>
+
+  <!-- Center: the ledger (signature element) -->
+  <section class="ledger col-center" aria-labelledby="ledger-h">
+    <div class="ledger-head">
+      <h2 id="ledger-h">Ledger</h2>
+      <span class="folio">JUL 2026 · p.1</span>
+    </div>
+    <div class="ledger-cols" aria-hidden="true">
+      <span>DATE</span><span style="padding-left:14px">ENTRY</span><span class="amt">AMOUNT</span>
+    </div>
+    <div class="ledger-body">
+      <div class="entry inked">
+        <span class="date">Jul 2</span>
+        <span class="what">
+          <span class="merchant">Chipotle</span>
+          <span class="cat">Food · chat</span>
+        </span>
+        <span class="amount">14.00</span>
+      </div>
+      <div class="entry">
+        <span class="date">Jul 2</span>
+        <span class="what">
+          <span class="merchant">Uber</span>
+          <span class="cat">Transit · sms</span>
+        </span>
+        <span class="amount">23.50</span>
+      </div>
+      <div class="entry">
+        <span class="date">Jul 1</span>
+        <span class="what">
+          <span class="merchant">Kroger</span>
+          <span class="cat">Food</span>
+        </span>
+        <span class="amount">86.12</span>
+      </div>
+      <div class="entry">
+        <span class="date">Jul 1</span>
+        <span class="what">
+          <span class="merchant">Netflix</span>
+          <span class="cat">Subscriptions</span>
+        </span>
+        <span class="amount">15.99</span>
+      </div>
+      <div class="entry">
+        <span class="date">Jul 1</span>
+        <span class="what">
+          <span class="merchant">Corner Bakery</span>
+          <span class="cat uncat">Uncategorized</span>
+        </span>
+        <span class="amount">9.40</span>
+      </div>
+      <div class="entry-hint">
+        <span></span>
+        <span>Next entry goes here — try <code>$14 chipotle</code></span>
+      </div>
+    </div>
+    <div class="ledger-foot">
+      <span class="label">Month to date</span>
+      <span class="sum">$1,284.50</span>
+    </div>
+  </section>
+
+  <!-- Right: quick add + chat -->
+  <div class="col-right">
+    <section class="panel" aria-labelledby="qa-h">
+      <p class="eyebrow" id="qa-h">Quick add</p>
+      <form>
+        <div class="field">
+          <label for="qa-amount">Amount</label>
+          <input class="amount-input" id="qa-amount" inputmode="decimal" placeholder="0.00">
+        </div>
+        <div class="field">
+          <label for="qa-merchant">Merchant</label>
+          <input id="qa-merchant" placeholder="Where was it?">
+        </div>
+        <div class="field">
+          <label for="qa-cat">Category</label>
+          <select id="qa-cat">
+            <option>Food</option><option>Transit</option><option>Rent</option>
+            <option>Utilities</option><option>Subscriptions</option>
+            <option>Entertainment</option><option>Health</option>
+            <option>Shopping</option><option>Other</option>
+          </select>
+        </div>
+        <button class="btn" type="button">Log expense</button>
+      </form>
+    </section>
+
+    <section class="panel chat" aria-labelledby="chat-h">
+      <p class="eyebrow" id="chat-h">Chat</p>
+      <div class="thread">
+        <p class="msg you">$14 chipotle</p>
+        <p class="msg bot">Logged.<span class="parse">$14.00 — Chipotle — Food</span></p>
+        <p class="msg you">9.40 corner bakery</p>
+        <p class="msg bot">Logged, no category yet.<span class="parse">$9.40 — Corner Bakery — ?</span></p>
+      </div>
+      <form>
+        <input aria-label="Log an expense by message" placeholder="$12.50 coffee">
+        <button type="button">Log</button>
+      </form>
+    </section>
+  </div>
+
+</main>
+
+<button class="fab" aria-label="Log expense">＋</button>
+
+</body>
+</html>
